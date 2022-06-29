@@ -1,10 +1,12 @@
-import { onSnapshot } from "firebase/firestore";
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { motion } from "framer-motion"
 import React, { useState } from 'react';
 import { MdAttachMoney, MdCloudUpload, MdDelete, MdFastfood, MdFoodBank } from 'react-icons/md';
+import { actionType } from "../context/Reducer";
+import { UseStateValue } from "../context/StateProvider";
 import { storage } from "../firebase.config";
 import { catagories } from "../utils/data";
+import { getAllFoodItems, saveItem } from "../utils/firebaseFunction";
 import Loader from "./Loader";
 
 
@@ -13,12 +15,14 @@ const CreateContainer = () => {
     const [title, setTitle] = useState("");
     const [calories, setCalories] = useState("");
     const [price, setPrice] = useState("");
-    const [catagory, setCatagory] = useState(null);
+    const [category, setCatagory] = useState(null);
     const [imageAsset, setImageAsset] = useState(null);
     const [fields, setFields] = useState(false);
     const [alertStatus, setAlertStatus] = useState("danger");
     const [msg, setMsg] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    const [{ foodItems }, dispatch] = UseStateValue();
 
     const upLoadImage = (e) => {
         setIsLoading(true);
@@ -33,7 +37,7 @@ const CreateContainer = () => {
                 const uoloadProgress = (snapshot.uploadBytesResumable / snapshot.totalBytes)
             },
             (error) => {
-                console.log(error);
+                // console.log(error);
                 setFields(true);
                 setMsg("Error while uploading : try Again ");
                 setAlertStatus('danger')
@@ -75,7 +79,67 @@ const CreateContainer = () => {
     }
 
     const saveDetails = () => {
+        setIsLoading(true)
+        try {
+            if ((!title || !calories || !imageAsset || !price || !category)) {
 
+                setFields(true);
+                setMsg("Required fields can't be empty");
+                setAlertStatus('danger')
+                setTimeout(() => {
+                    setFields(false)
+                    setIsLoading(false)
+                }, 4000)
+            }
+            else {
+                const data = {
+                    id: `${Date.now()}`,
+                    title: title,
+                    imageURL: imageAsset,
+                    category: category,
+                    calories: calories,
+                    qty: 1,
+                    price: price,
+                }
+                saveItem(data)
+                setIsLoading(false)
+                setFields(true)
+                setMsg("Data uploaded Successfully")
+                clearData()
+                setAlertStatus("success")
+                setTimeout(() => {
+                    setFields(false)
+                }, 4000)
+            }
+        } catch (error) {
+            // console.log(error);
+            setFields(true);
+            setMsg("Error while uploading : try Again ");
+            setAlertStatus('danger')
+            setTimeout(() => {
+                setFields(false)
+                setIsLoading(false)
+            }, 4000)
+        }
+
+        fetchData();
+    }
+
+    const clearData = () => {
+        setTitle("")
+        setImageAsset(null)
+        setCalories("")
+        setPrice("")
+        setCatagory("Select Category")
+    }
+
+    const fetchData = async () => {
+        await getAllFoodItems().then(data => {
+            dispatch({
+                type: actionType.SET_FOOD_ITEMS,
+                foodItems: data,
+            })
+        })
     }
 
     return (
@@ -87,8 +151,8 @@ const CreateContainer = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className={`w - full p - 2 rounded - lg text - center text - lg font - semibold ${alertStatus === 'danger' ?
-                                'bg-red-400 text-red-800' : 'bg-emerald-400 text-emerald-400'
+                            className={`w-full p-2 rounded-lg text-center text-lg font-semibold ${alertStatus === 'danger' ?
+                                'bg-red-400 text-red-800' : 'bg-emerald-400 text-white'
                                 } `}>
                             {msg}
                         </motion.p>
