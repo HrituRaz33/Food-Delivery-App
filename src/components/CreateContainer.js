@@ -5,7 +5,7 @@ import { MdAttachMoney, MdCloudUpload, MdDelete, MdFastfood, MdFoodBank } from '
 import { actionType } from "../context/Reducer";
 import { UseStateValue } from "../context/StateProvider";
 import { storage } from "../firebase.config";
-import { catagories } from "../utils/data";
+import { categories } from "../utils/data";
 import { getAllFoodItems, saveItem } from "../utils/firebaseFunction";
 import Loader from "./Loader";
 
@@ -176,7 +176,7 @@ const CreateContainer = () => {
                         onChange={(e) => setCatagory(e.target.value)}>
                         <option value="other" className="bg-white">Select Catagory</option>
                         {
-                            catagories && catagories.map(item => (
+                            categories && categories.map(item => (
                                 <option key={item.id}
                                     value={item.urlParaName}
                                     className="text-base border-0 outline-none capitalize bg-white text-gray-500 ">

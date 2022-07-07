@@ -35,7 +35,7 @@ export const heropData = [
     },
 ]
 
-export const catagories = [
+export const categories = [
     {
         id: 1,
         name: "Chicken",
