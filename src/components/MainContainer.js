@@ -5,6 +5,10 @@ import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import RowContainer from './RowContainer';
 import { UseStateValue } from '../context/StateProvider';
 import MenuContainer from './MenuContainer';
+import CartContainer from './CartContainer';
+
+
+
 
 const MainContainer = () => {
 
@@ -56,6 +60,8 @@ const MainContainer = () => {
 
             <section className='w-full my-6'>
                 <MenuContainer />
+
+                <CartContainer />
             </section>
 
         </div >
